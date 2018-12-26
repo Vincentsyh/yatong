@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.bootcss.com/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
+    <title>上传新产品</title>
+</head>
+<style>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 350px;
+        height: 190px;
+        line-height: 190px;
+        text-align: center;
+
+    }
+    .avatar {
+        width: 350px;
+        height: 190px;
+        display: block;
+        margin-left: 0px;
+    }
+</style>
+<body style="height: 100%">
+<div id="main">
+    <el-row>
+        <el-col :span="10" :offset="1">
+            <h3 style="color: #409EFF; margin-top: 20px; text-align: center">上传新产品</h3>
+            <el-form ref="form" status-icon :model="form" label-width="200px" :rules="rules" id="upload">
+                <el-form-item label="产品名称" prop="name">
+                    <el-col :span="24">
+                        <el-input v-model.trim="form.name" clearable></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="英文名称" prop="englishName">
+                    <el-col :span="24">
+                        <el-input v-model.trim="form.englishName" clearable></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="产品编号" prop="code">
+                    <el-col :span="24">
+                        <el-input v-model.trim="form.code" clearable></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="所属分类" prop="category">
+                    <el-col :span="24">
+                        <el-select v-model.trim="form.category" placeholder="选择分类" style="width: 390px">
+                            <el-option v-for="category in categories" :label="category.name" :value="category.id"></el-option>
+                        </el-select>
+                        <el-button type="primary" @click="addCategory()">新增分类</el-button>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-col :span="24">
+                        <el-input v-model.trim="form.remark"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item style="display: none">
+                    <el-col :span="18">
+                        <el-input v-model.trim="form.url" type="hidden"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item>
+                    <el-col :span="24">
+                        <form>
+                            <el-upload
+                                    action="http://upload.qiniup.com"
+                                    class="avatar-uploader"
+                                    :show-file-list="false"
+                                    :on-success="handleImgSuccess"
+                                    :before-upload="beforeImgUpload"
+                                    :data="imgData">
+                                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon" @click="getToken"><em>点击上传产品图片</em></i>
+                            </el-upload>
+                        </form>
+                    </el-col>
+                </el-form-item>
+                <el-form-item>
+                    <el-col :offset="7">
+                        <el-button type="primary" @click="register('form')">上传产品</el-button>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <el-dialog title="新增分类" :visible.sync="dialogFormVisible">
+        <el-form ref="dform" status-icon :model="dform" label-width="200px" :rules="categoryRules" id="addCategory">
+            <el-form-item label="分类名称" prop="name">
+                <el-col :span="18">
+                    <el-input v-model.trim="dform.name" clearable></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="英文名称" prop="englishName">
+                <el-col :span="18">
+                    <el-input v-model.trim="dform.englishName" clearable></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item>
+                <el-col :offset="7">
+                    <el-button type="primary" @click="uploadCategory('dform')">新增</el-button>
+                </el-col>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+</div>
+</body>
+</html>
+<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#main',
+        data() {
+            return {
+                form: {
+                    name: '',
+                    englishName: '',
+                    code: '',
+                    category: '',
+                    remark: '',
+                    url: '',
+                },
+                imgData:{
+                    token: ''
+                },
+                uploadHeader:{
+                    'Content-Type': 'multipart/form-data;'
+                },
+                imageUrl: '',
+                dform:{
+                  name: '',
+                  englishName: ''
+                },
+                categoryRules: {
+                    name: [
+                        {required: true, message: '输入名称', trigger: 'blur'},
+                    ],
+                    englishName: [
+                        {required: true, message: '输入英文名称', trigger: 'blur'},
+                    ]
+                },
+                rules: {
+                    name: [
+                        {required: true, message: '输入名称', trigger: 'blur'},
+                    ],
+                    englishName: [
+                        {required: true, message: '输入英文名称', trigger: 'blur'},
+                    ],
+                    code: [
+                        {required: true, message: '请输入型号', trigger: 'blur'},
+                    ],
+                    category: [
+                        {required: true, message: '请选择所属类别', trigger: 'blur'},
+                    ]
+                },
+                categories: [{
+                    id: '',
+                    name: ''
+                }],
+                dialogFormVisible: false,
+            }
+        },
+        created() {
+            this.loadData();
+        },
+        methods: {
+            loadData() {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/category/getAll',
+                }).then(function (response) {
+                    if (response.data.code == '1') {
+                        let results = response.data.data;
+                        for (let i = 0; i<results.length; i++) {
+                            let result = {
+                                id: '',
+                                name:''
+                            };
+                            result.id = results[i].id;
+                            result.name = results[i].name;
+                            _this.$set(_this.categories, i, result);
+                        }
+                    } else {
+                        _this.$notify({
+                            title: '错误',
+                            message: response.data.message,
+                            type: 'error'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            register(form) {
+                let _this = this;
+                this.$refs[form].validate((valid) => {
+                    if (valid) {
+                        console.log(_this.imageUrl);
+                        if(_this.imageUrl==null || _this.imageUrl === "") {
+                            _this.$notify({
+                                title: '错误',
+                                message: '请上传图片',
+                                type: 'error'
+                            });
+                            return false;
+                        } else {
+                            axios({
+                                method: 'post',
+                                url: '/api/product/upload',
+                                data: _this.form
+                            })
+                                .then(function (response) {
+                                    if (response.data.code == '1') {
+                                        _this.$notify({
+                                            title: 'Success',
+                                            message: '新增产品成功',
+                                            type: 'success'
+                                        });
+                                        // setTimeout(window.location.reload(), 1000);
+                                    } else {
+                                        _this.$notify({
+                                            title: '错误',
+                                            message: response.data.message,
+                                            type: 'error'
+                                        });
+                                    }
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+                        }
+
+                    } else {
+                        return false;
+                    }
+                })
+            },
+            addCategory() {
+                this.dialogFormVisible = true;
+            },
+            uploadCategory(dform){
+                let _this = this;
+                this.$refs[dform].validate((valid) => {
+                    if (valid) {
+                        axios({
+                            method: 'post',
+                            url: '/api/category/upload',
+                            data: _this.dform
+                        })
+                            .then(function (response) {
+                                if (response.data.code == '1') {
+                                    _this.$notify({
+                                        title: 'Success',
+                                        message: '新增分类成功',
+                                        type: 'success'
+                                    });
+                                    setTimeout(window.location.reload(), 2000);
+                                } else {
+                                    _this.$notify({
+                                        title: '错误',
+                                        message: response.data.message,
+                                        type: 'error'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                    } else {
+                        return false;
+                    }
+                })
+            },
+            handleImgSuccess(res, file) {
+                this.imageUrl = URL.createObjectURL(file.raw);
+                this.$notify({
+                    title: '成功',
+                    message: '图片上传成功',
+                    type: 'success'
+                });
+                this.form.url = res.hash;
+            },
+            getToken(){
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAccessKey',
+                }).then(function (response) {
+                    if (response.data.code == '1') {
+                        _this.$nextTick(() => {
+                            _this.imgData = {
+                                token : response.data.data
+                            }
+                        });
+                    } else {
+                        _this.$notify({
+                            title: '失败',
+                            message: '请先登录',
+                            type: 'error'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            beforeImgUpload(file) {
+                const isLt2M = file.size / 1024 / 1024 < 10;
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过10MB!');
+                    return isLt2M;
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: yatong
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: lb
+Implementation-Vendor-Id: com.lb
+Created-By: IntelliJ IDEA
+Build-Jdk: 10.0.2
+Main-Class: ${start-class}
+

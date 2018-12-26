@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>产品信息-永康市亚彤工贸有限公司</title>
+    <meta name="description" content="永康市亚彤工贸有限公司是一家"/>
+    <meta name="keywords" content="power tools|air tools|power accessories|water pump| garden tools |hand tools |welding machine| generators"/>
+    <meta name="renderer" content="webkit">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <link href="https://cdn.bootcss.com/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    .navbar-item {
+
+    }
+    .navbar-button {
+        font-size: 18px; color: #FFF;  text-align: center;
+    }
+    .navbar-item :hover {
+        background-color: #FE5722;
+    }
+    .el-collapse-item__content {
+        padding-bottom: 0 !important;
+    }
+    .list-group-item.active {
+        background-color: #FC7C1A;
+        border-color: #FF7F00;
+    }
+</style>
+<body style="margin: 0; background-color: #FCFCFC ">
+<div id="main">
+    <el-row type="flex" class="title" justify="center">
+        <el-col :span="4">
+            <img src="http://images.yactectools.com/logo2.png" style="width: 300px; height: 120px;">
+        </el-col>
+        <el-col :span="8" style="margin-top: 15px; text-align: center">
+            <el-row>
+                <el-col :span="12">
+                    <span style="color: #2E3192; font-size: 25px">公司名称(换成图片)</span>
+                </el-col>
+            </el-row>
+            <el-row type="flex" justify="space-between">
+                <el-col :span="12">
+                </el-col>
+                <el-col :span="12">
+                    <div style="margin-top: 20px"><i class="el-icon-phone" style="color: #FE5722; font-family: Arial; font-size: 30px;">17806228320</i></div>
+                </el-col>
+            </el-row>
+        </el-col>
+        <el-col :span="4">
+            <div style="margin-top: 15px; text-align: right">
+                <el-button type="text">简体中文</el-button>
+                &nbsp;&nbsp;|
+                <el-button type="text">English</el-button>
+            </div>
+            <div style="text-align: right; margin-top: 10px;" >
+                <el-form :inline="true">
+                    <el-form-item>
+                        <el-input prefix-icon="el-icon-search" placeholder="请输入要搜索的型号关键词" clearable style="width: 200px;" >
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" style="height: 39px">搜索</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-col>
+
+    </el-row>
+    <el-row type="flex" class="navbar" justify="center" style=" color: #FFF; background-image: linear-gradient(312deg, rgb(46,49,146) 0%, rgb(30, 150, 229) 100%) !important;">
+        <el-col :span="3" class="navbar-item" >
+            <div style="padding-top: 12px; padding-bottom: 12px">
+                <div class="navbar-button"><a href="/index" style="text-decoration:none; color: #FFF;">首页</a></div>
+            </div>
+        </el-col>
+        <el-col :span="3" class="navbar-item">
+            <div style="padding-top: 12px; padding-bottom: 12px">
+                <div class="navbar-button"><a href="/product" style="text-decoration:none; color: #FFF;">产品中心</a></div>
+            </div>
+        </el-col>
+        <el-col :span="3" class="navbar-item">
+            <div style="padding-top: 12px; padding-bottom: 12px">
+                <div class="navbar-button"><a href="/about" style="text-decoration:none; color: #FFF;">关于我们</a></div>
+            </div>
+        </el-col>
+        <el-col :span="3" class="navbar-item">
+            <div style="padding-top: 12px; padding-bottom: 12px">
+                <div class="navbar-button"><a href="/contact" style="text-decoration:none; color: #FFF;">联系我们</a></div>
+            </div>
+        </el-col>
+    </el-row>
+    <br/>
+    <el-row type="flex" justify="center">
+        <el-col :span="16">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+                <el-breadcrumb-item><a href="/index">首页</a></el-breadcrumb-item>
+                <el-breadcrumb-item>产品信息</el-breadcrumb-item>
+            </el-breadcrumb>
+        </el-col>
+    </el-row>
+    <hr style="width: 66.7%; margin-top: 20px">
+    <br/>
+    <el-row type="flex" justify="center">
+        <el-col :span="4"  style="text-align: center; padding-right: 30px; color: white">
+            <div  style="border: 1px solid #227ED1; ">
+                <div style="height: 60px; background-color: #227ED1; color: #FFF;text-align: left; font-size: 20px; padding-top: 15px; padding-left: 15px"><i class="el-icon-menu">&nbsp;&nbsp;</i>产品分类</div>
+                <div class="list-group">
+                    <a href="##" :class=" index === category.id ? 'list-group-item active' : 'list-group-item' " v-for="category in categories" @click="getProductsByCategory(category.id)">{{category.name}}</a>
+                </div>
+
+            </div>
+        </el-col>
+        <el-col :span="12" style="border: 1px solid #227ED1">
+            <el-row type="flex" justify="start" class="home-img">
+                <el-col :span="8" v-for="data in tableData1" style="padding: 15px">
+                    <el-card :body-style="{ padding: '10px' }" shadow="hover">
+                        <img :src="prefix + data.url" class="image" style="height: 200px; width: 100%" >
+                        <div style="text-align: center; margin-top: 5px; padding-top: 5px; background-color: #F7F7F7; height: 30px">
+                            <span style="">{{data.name}}</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row type="flex" justify="start" class="home-img" >
+                <el-col :span="8" v-for="data in tableData2" style="padding: 15px">
+                    <el-card :body-style="{ padding: '10px' }" shadow="hover">
+                        <img :src="prefix + data.url" class="image" style="height: 200px; width: 100%" >
+                        <div style="text-align: center; margin-top: 5px; padding-top: 5px; background-color: #F7F7F7; height: 30px">
+                            <span style="">{{data.name}}</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row type="flex" justify="start" class="home-img" >
+                <el-col :span="8" v-for="data in tableData3" style="padding: 15px">
+                    <el-card :body-style="{ padding: '10px' }" shadow="hover">
+                        <img :src="prefix + data.url" class="image" style="height: 200px; width: 100%" >
+                        <div style="text-align: center; margin-top: 5px; padding-top: 5px; background-color: #F7F7F7; height: 30px">
+                            <span style="">{{data.name}}</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <br/>
+            <el-row type="flex" justify="center">
+                <el-pagination
+                        background
+                        :page-size="9"
+                        layout="prev, pager, next"
+                        :total="total"
+                        :current-page="currentPage"
+                        @current-change="handleCurrentChange"
+                        v-show="tableData.length!=0">
+                </el-pagination>
+            </el-row>
+            <br/>
+        </el-col>
+    </el-row>
+    <br/>
+    <el-row type="flex" justify="center" style="background-image: linear-gradient(312deg, rgb(46,49,146) 0%, rgb(30, 150, 229) 100%) !important; padding-top: 40px; padding-bottom: 30px">
+        <el-col :span="4">
+            <img src="http://gb.mpt-tools.com/templates/michuan/images/2wm.jpg" style="height: 100%;"/>
+        </el-col>
+        <el-col :span="6" style="color: #FFF;">
+            <p>联系我们</p>
+            <p>电话：17806228320</p>
+            <p>地址：浙江省金华市永康市西城街道藻塘村藻塘南路6号</p>
+            <p>邮箱：1146964584@qq.com</p>
+            <p style="font-size: 10px; color: #2f2c2c">COPYRIGHT © 永康市亚彤工贸有限公司 ALL RIGHTS RESERVED.&nbsp;&nbsp;&nbsp;&nbsp;<a href="/login" style="color: #FFF;">后台入口</a></p>
+        </el-col>
+        <el-col :span="6" style="color: #FFF;">
+            <h3>永康市亚彤工贸有限公司</h3>
+            <p>经营范围：电动工具、手动工具、气动工具、电焊机、空压机及配件、测量仪器</p>
+        </el-col>
+    </el-row>
+</div>
+</body>
+</html>
+<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-i18n/7.7.0/vue-i18n.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.4.0/locale/en.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script>
+    const cn = {
+        message: {
+            'button': '按钮',
+        }
+    };
+    const en = {
+        message: {
+            'button': 'button',
+        }
+    };
+    const messages = {
+        en: en,
+        cn: cn
+    };
+    const i18n = new VueI18n({
+        locale: localStorage.lang || 'en',
+        messages
+    })
+    new Vue({
+        el: '#main',
+        i18n,
+        data() {
+            return {
+                categories: [{
+                    id: '',
+                    name: '',
+                    englishName: ''
+                }],
+                index:'',
+                tableData: [],
+                tableData1: [],
+                tableData2: [],
+                tableData3: [],
+                total: 0,
+                currentPage: 1,
+                pagerCount: 8,
+                prefix: 'http://images.yactectools.com/'
+            }
+        },
+        created() {
+            this.loadCategory();
+        },
+        methods:{
+            loadCategory() {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/category/getAll',
+                }).then(function (response) {
+                    if (response.data.code == '1') {
+                        let results = response.data.data;
+                        for (let i = 0; i<results.length; i++) {
+                            let result = {
+                                id: '',
+                                name:'',
+                                englishName:''
+                            };
+                            result.id = results[i].id;
+                            result.name = results[i].name;
+                            result.englishName = results[i].englishName;
+                            _this.$set(_this.categories, i, result);
+                            _this.getProductsByCategory(_this.categories[0].id);
+                        }
+                    } else {
+                        _this.$notify({
+                            title: '错误',
+                            message: response.data.message,
+                            type: 'error'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            getProductsByCategory(id){
+                this.index = id;
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAllByCategory/'+id+'/1',
+                }).then(function (response) {
+                    _this.total = response.data.total;
+                    _this.currentPage = response.data.pageNum;
+                    _this.tableData = response.data.list;
+                    _this.tableData1 = _this.tableData.slice(0,3);
+                    _this.tableData2 = _this.tableData.slice(3,6);
+                    _this.tableData3 = _this.tableData.slice(6,9);
+                    console.log(_this.tableData1);
+                    console.log("---------------");
+                    console.log(_this.tableData2);
+                    console.log("---------------");
+                    console.log(_this.tableData3);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            handleCurrentChange(val) {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAllByCategory/'+_this.index+'/'+val,
+                }).then(function (response) {
+                    _this.total = response.data.total;
+                    _this.currentPage = response.data.pageNum;
+                    _this.tableData = response.data.list;
+                    _this.tableData1 = _this.tableData.slice(0,3);
+                    _this.tableData2 = _this.tableData.slice(3,6);
+                    _this.tableData3 = _this.tableData.slice(6,9);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+        }
+    });
+</script>

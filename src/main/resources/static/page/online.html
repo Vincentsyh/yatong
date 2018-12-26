@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>在线产品</title>
+    <link href="https://cdn.bootcss.com/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
+</head>
+<style>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 280px;
+        height: 140px;
+        line-height: 120px;
+        text-align: center;
+
+    }
+    .avatar {
+        width: 280px;
+        height: 140px;
+        display: block;
+        margin-left: 0px;
+    }
+</style>
+<body style="height: 100%">
+<div id="main">
+    <el-table
+            :data="tableData"
+            border
+            empty-text="暂无数据"
+            fit
+            stripe>
+        <el-table-column
+                id="name"
+                prop="name"
+                label="产品名称"
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                id="englishName"
+                prop="englishName"
+                label="英文名称"
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                id="code"
+                prop="code"
+                label="产品编号"
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                id="categoryName"
+                prop="categoryName"
+                label="所属分类"
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                id="remark"
+                prop="remark"
+                label="备注"
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                v-if="false"
+                id="url"
+                prop="url"
+                label=""
+                align="center"
+                header-align="center">
+        </el-table-column>
+        <el-table-column
+                id="edit"
+                label="编辑"
+                align="center"
+                header-align="center">
+            <template slot-scope="scope">
+                <el-button
+                        type="primary"
+                        @click="handleEdit(scope.$index, scope.row, tableData)">编辑
+                </el-button>
+            </template>
+        </el-table-column>
+        <el-table-column
+                id="delete"
+                label="删除"
+                align="center"
+                header-align="center">
+            <template slot-scope="scope">
+                <el-button
+                        type="danger"
+                        @click="handleDelete(scope.$index, scope.row, tableData)">删除
+                </el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <br/>
+    <div style="text-align: center">
+        <el-pagination
+                background
+                :page-size="10"
+                layout="prev, pager, next"
+                :total="total"
+                :current-page="currentPage"
+                @current-change="handleCurrentChange">
+        </el-pagination>
+    </div>
+    <el-dialog title="编辑产品" :visible.sync="dialogFormVisible">
+        <el-form ref="form" status-icon :model="form" label-width="200px" :rules="rules" id="upload">
+            <el-form-item label="产品名称" prop="name">
+                <el-col :span="18">
+                    <el-input v-model.trim="form.name" clearable disabled=true></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="英文名称" prop="englishName">
+                <el-col :span="18">
+                    <el-input v-model.trim="form.englishName" clearable></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="产品编号" prop="code">
+                <el-col :span="18">
+                    <el-input v-model.trim="form.code" clearable></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="所属分类" prop="category">
+                <el-col :span="18">
+                    <el-select v-model.trim="form.category" placeholder="选择分类" style="width: 270px">
+                        <el-option v-for="category in categories" :label="category.name" :value="category.id"></el-option>
+                    </el-select>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="备注" prop="remark">
+                <el-col :span="18">
+                    <el-input v-model.trim="form.remark"></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item style="display: none">
+                <el-col :span="18">
+                    <el-input v-model.trim="form.url" type="hidden"></el-input>
+                </el-col>
+            </el-form-item>
+            <el-form-item lable="上传照片">
+                <el-col :span="18">
+                    <el-upload
+                            action="http://upload.qiniup.com"
+                            class="avatar-uploader"
+                            :show-file-list="false"
+                            :on-success="handleImgSuccess"
+                            :before-upload="beforeImgUpload"
+                            :data="imgData">
+                        <img v-if="imageUrl" :src="imageUrl" class="avatar" @click="getToken">
+                        <i v-else class="el-icon-plus avatar-uploader-icon" @click="getToken"><em>更换图片</em></i>
+                    </el-upload>
+                </el-col>
+            </el-form-item>
+            <el-form-item>
+                <el-col :offset="7">
+                    <el-button type="primary" @click="register('form')">上传产品</el-button>
+                </el-col>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+</div>
+</body>
+</html>
+<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#main',
+        data() {
+            return {
+                total: 0,
+                currentPage: 1,
+                pagerCount: 8,
+                tableData: [],
+                imageUrl: '',
+                form: {
+                    id: '',
+                    name: '',
+                    englishName: '',
+                    code: '',
+                    category: '',
+                    remark: '',
+                    url:''
+                },
+                imgData:{
+                    token: ''
+                },
+                dform:{
+                    name: '',
+                    englishName: ''
+                },
+                categoryRules: {
+                    name: [
+                        {required: true, message: '输入名称', trigger: 'blur'},
+                    ],
+                    englishName: [
+                        {required: true, message: '输入英文名称', trigger: 'blur'},
+                    ]
+                },
+                rules: {
+                    name: [
+                        {required: true, message: '输入名称', trigger: 'blur'},
+                    ],
+                    englishName: [
+                        {required: true, message: '输入英文名称', trigger: 'blur'},
+                    ],
+                    code: [
+                        {required: true, message: '请输入型号', trigger: 'blur'},
+                    ],
+                    category: [
+                        {required: true, message: '请选择所属类别', trigger: 'blur'},
+                    ]
+                },
+                categories: [{
+                    id: '',
+                    name: ''
+                }],
+                dialogFormVisible: false,
+                dialogFormVisible2: false,
+            }
+        },
+        created() {
+            this.loadData();
+        },
+        methods: {
+            loadData() {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAll/'+1,
+                }).then(function (response) {
+                    _this.total = response.data.total;
+                    _this.currentPage = response.data.pageNum;
+                    _this.tableData = response.data.list;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            loadCategory() {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/category/getAll',
+                }).then(function (response) {
+                    if (response.data.code == '1') {
+                        let results = response.data.data;
+                        for (let i = 0; i<results.length; i++) {
+                            let result = {
+                                id: '',
+                                name:''
+                            };
+                            result.id = results[i].id;
+                            result.name = results[i].name;
+                            _this.$set(_this.categories, i, result);
+                        }
+                    } else {
+                        _this.$notify({
+                            title: '错误',
+                            message: response.data.message,
+                            type: 'error'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            handleCurrentChange(val) {
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAll/'+val,
+                }).then(function (response) {
+                    _this.total = response.data.total;
+                    _this.currentPage = response.data.pageNum;
+                    _this.tableData = response.data.list;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            handleEdit(index, row) {
+                this.dialogFormVisible = true;
+                this.loadCategory();
+                this.form = row;
+                this.imageUrl = 'http://images.yactectools.com/' + row.url;
+            },
+            handleDelete(index, row, rows) {
+                let _this = this;
+                axios.post('/api/product/deleteOne?id='+row.id, {
+                })
+                    .then(function (response) {
+                        if (response.data.code != "1") {
+                            _this.$notify({
+                                title: '错误',
+                                message: '删除失败',
+                                type: 'error'
+                            });
+                        }
+                        else
+                            rows.splice(index, 1);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            register(form) {
+                let _this = this;
+                this.$refs[form].validate((valid) => {
+                    if (valid) {
+                        if(_this.imageUrl==null || _this.imageUrl === "") {
+                            _this.$notify({
+                                title: '错误',
+                                message: '请上传图片',
+                                type: 'error'
+                            });
+                            return false;
+                        } else {
+                            axios({
+                                method: 'post',
+                                url: '/api/product/updateOne',
+                                data: _this.form
+                            })
+                                .then(function (response) {
+                                    if (response.data.code == '1') {
+                                        _this.$notify({
+                                            title: 'Success',
+                                            message: '新增产品成功',
+                                            type: 'success'
+                                        });
+                                        _this.dialogFormVisible = false;
+                                    } else {
+                                        _this.$notify({
+                                            title: '错误',
+                                            message: response.data.message,
+                                            type: 'error'
+                                        });
+                                    }
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+                        }
+                    } else {
+                        return false;
+                    }
+                })
+            },
+            addCategory() {
+                this.dialogFormVisible = true;
+            },
+            uploadCategory(dform){
+                let _this = this;
+                this.$refs[dform].validate((valid) => {
+                    if (valid) {
+                        axios({
+                            method: 'post',
+                            url: '/api/category/upload',
+                            data: _this.dform
+                        })
+                            .then(function (response) {
+                                if (response.data.code == '1') {
+                                    _this.$notify({
+                                        title: 'Success',
+                                        message: '新增分类成功',
+                                        type: 'success'
+                                    });
+                                    setTimeout(window.location.reload(), 2000);
+                                } else {
+                                    _this.$notify({
+                                        title: '错误',
+                                        message: response.data.message,
+                                        type: 'error'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                    } else {
+                        return false;
+                    }
+                })
+            },
+            handleImgSuccess(res, file) {
+                this.imageUrl = URL.createObjectURL(file.raw);
+                this.$notify({
+                    title: '成功',
+                    message: '图片上传成功',
+                    type: 'success'
+                });
+                this.form.url = res.hash;
+            },
+            getToken(){
+                let _this = this;
+                axios({
+                    method: 'get',
+                    url: '/api/product/getAccessKey',
+                }).then(function (response) {
+                    if (response.data.code == '1') {
+                        _this.$nextTick(() => {
+                            _this.imgData = {
+                                token : response.data.data
+                            }
+                        });
+                    } else {
+
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            beforeImgUpload(file) {
+                const isLt2M = file.size / 1024 / 1024 < 10;
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过10MB!');
+                    return isLt2M;
+                }
+            }
+        }
+    });
+</script>
